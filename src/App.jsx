@@ -13,9 +13,9 @@ export default function App() {
     const firstValue = dice[0].value; // Get the value of the first die
     const allSameValue = dice.every(die => die.value === firstValue) // Check if all dice have the same value
 
-    if (allHeld || allSameValue) { 
+    if (allHeld && allSameValue) { 
       setGameWon(true);
-      console.log("You've Won!")
+      //console.log("You've Won!")
     }
   }, [dice]) // Dependency array to run the effect whenever the dice state changes
 
