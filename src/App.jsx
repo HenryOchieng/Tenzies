@@ -16,14 +16,11 @@ export default function App() {
     if (allHeld && allSameValue) { 
       setGameWon(true);
     }
-  }, [dice]) // Dependency array to run the effect whenever the dice state changes
 
-  // Focus the roll button when the game is won
-  useEffect(() => { 
     if (gameWon) {
-      rollBtnRef.current?.focus()
+      rollBtnRef.current.focus()
     }
-  }, [gameWon])
+  }, [dice, gameWon])
 
   // Function to generate an array of 10 new dice objects
   function generateAllNewDice() {
