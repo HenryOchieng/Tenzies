@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Confetti from 'react-confetti'
 import Die from './Components/Die'
 import { nanoid } from 'nanoid'
@@ -6,18 +6,24 @@ import { nanoid } from 'nanoid'
 export default function App() {
   const [dice, setDice] = useState(generateAllNewDice())
   const [gameWon, setGameWon] = useState(false);
+  const rollBtnRef = useRef(null)
   
   // Check for win condition whenever the dice state changes
   useEffect(() => {
-    const allHeld = dice.every(die => die.isHeld); // Check if all dice are held
-    const firstValue = dice[0].value; // Get the value of the first die
-    const allSameValue = dice.every(die => die.value === firstValue) // Check if all dice have the same value
-
+    const allHeld = dice.every(die => die.isHeld);
+    const firstValue = dice[0].value;
+    const allSameValue = dice.every(die => die.value === firstValue)
     if (allHeld && allSameValue) { 
       setGameWon(true);
-      //console.log("You've Won!")
     }
   }, [dice]) // Dependency array to run the effect whenever the dice state changes
+
+  // Focus the roll button when the game is won
+  useEffect(() => { 
+    if (gameWon) {
+      rollBtnRef.current?.focus()
+    }
+  }, [gameWon])
 
   // Function to generate an array of 10 new dice objects
   function generateAllNewDice() {
@@ -30,16 +36,26 @@ export default function App() {
         }))
   }
 
+  // Function to reset the game
+  function resetGame() {
+    setDice(generateAllNewDice()); 
+    setGameWon(false);
+  }
+
   // Function to roll the dice
   function rollDice() {
-    if (gameWon) return; // If the game is won, do nothing on roll
-    setDice(oldDice => 
-      oldDice.map(die => {
-        return die.isHeld
-          ? die // If the die is held, return it unchanged
-          : { ...die, value: Math.ceil(Math.random() * 6) } // If not held, return a new die object with a new random value
+    if (!gameWon) {
+          setDice(oldDice => 
+          oldDice.map(die => {
+          return die.isHeld
+          ? die
+          : { ...die, value: Math.ceil(Math.random() * 6) }
       })
     )
+    } else {
+      resetGame()
+    }
+
   }
 
   // Fuction to toggle the isHeld property of a die
@@ -61,24 +77,25 @@ export default function App() {
     />
   ))
 
-  // Function to reset the game
-  function resetGame() {
-    setDice(generateAllNewDice()); 
-    setGameWon(false);
-  }
-
   // Render the main component
   return (
     <main>
       {gameWon && <Confetti />}
+      <div aria-live='polite' className='sr-only'>
+        {gameWon && <p>Congratulations! You won the game! Press "New Game" to start again.</p>}
+      </div>
       <h1 className='title'>Tenzies</h1>
       <p className='instructions'>Roll untill all dice are the same. Click each die to freeze it at its current value between rolls.</p>
       <div className='dice-container'>
         {diceElements}
       </div>
-      <button className="roll-dice" onClick={rollDice}>{gameWon ? "Game Over" : "Roll"}</button>
-      {gameWon && <div className="congratulations">Congratulations! You've won!</div>}
-      <button className="reset-dice" onClick={resetGame}>Reset</button>
+      <button 
+        ref={rollBtnRef} 
+        className="roll-dice" 
+        onClick={rollDice}
+      >
+        {gameWon ? "New Game" : "Roll"}
+      </button> 
     </main>
   )
 }
