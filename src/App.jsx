@@ -7,6 +7,8 @@ export default function App() {
   const [dice, setDice] = useState(generateAllNewDice())
   const [gameWon, setGameWon] = useState(false);
   const rollBtnRef = useRef(null)
+  const [rollCount, setRollCount] = useState(0)
+  const [time, setTime] = useState(0)
   
   // Check for win condition whenever the dice state changes
   useEffect(() => {
@@ -19,6 +21,12 @@ export default function App() {
 
     if (gameWon) {
       rollBtnRef.current.focus()
+    } else {
+      const intervalId = setInterval(() => {
+        setTime(prevTime => prevTime + 1)
+      }, 1000)
+
+      return () => clearInterval(intervalId)
     }
   }, [dice, gameWon])
 
@@ -37,16 +45,19 @@ export default function App() {
   function resetGame() {
     setDice(generateAllNewDice()); 
     setGameWon(false);
+    setRollCount(0)
+    setTime(0)
   }
 
   // Function to roll the dice
   function rollDice() {
     if (!gameWon) {
-          setDice(oldDice => 
-          oldDice.map(die => {
-          return die.isHeld
-          ? die
-          : { ...die, value: Math.ceil(Math.random() * 6) }
+      setRollCount(prev => prev + 1)
+      setDice(oldDice => 
+      oldDice.map(die => {
+        return die.isHeld
+        ? die
+        : { ...die, value: Math.ceil(Math.random() * 6) }
       })
     )
     } else {
@@ -83,6 +94,10 @@ export default function App() {
       </div>
       <h1 className='title'>Tenzies</h1>
       <p className='instructions'>Roll untill all dice are the same. Click each die to freeze it at its current value between rolls.</p>
+      <div className='dice-stats'>
+        <p>Rolls: <strong>{rollCount}</strong></p>
+        <p>Time: <strong>{time}</strong></p>
+      </div>
       <div className='dice-container'>
         {diceElements}
       </div>
