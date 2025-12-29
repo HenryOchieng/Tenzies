@@ -9,6 +9,12 @@ export default function App() {
   const rollBtnRef = useRef(null)
   const [rollCount, setRollCount] = useState(0)
   const [time, setTime] = useState(0)
+  const [bestTime, setBestTime] = useState(
+    () => JSON.parse(localStorage.getItem("bestTime")) ?? null
+  )
+  const [bestRolls, setBestRolls] = useState(
+    () => JSON.parse(localStorage.getItem("bestRolls")) ?? null
+  )
   
   // Check for win condition whenever the dice state changes
   useEffect(() => {
@@ -20,6 +26,16 @@ export default function App() {
     }
 
     if (gameWon) {
+      if (bestTime === null || time < bestTime) {
+        setBestTime(time)
+        localStorage.setItem("bestTime", JSON.stringify(time))
+      }
+
+      if (bestRolls === null || rollCount < bestRolls) {
+        setBestRolls(rollCount)
+        localStorage.setItem("bestRolls", JSON.stringify(rollCount))
+      }
+
       rollBtnRef.current.focus()
     } else {
       const intervalId = setInterval(() => {
@@ -90,13 +106,26 @@ export default function App() {
     <main>
       {gameWon && <Confetti />}
       <div aria-live='polite' className='sr-only'>
-        {gameWon && <p>Congratulations! You won the game! Press "New Game" to start again.</p>}
+        {gameWon && <p>Congratulations! You won in {rollCount} rolls and {time} seconds.
+          {bestTime === time && " This your best time!"}
+          {bestRolls === rollCount && " This is your best roll record!"} 
+          Press "New Game" to start again.
+        </p>}
       </div>
       <h1 className='title'>Tenzies</h1>
       <p className='instructions'>Roll untill all dice are the same. Click each die to freeze it at its current value between rolls.</p>
       <div className='dice-stats'>
         <p>Rolls: <strong>{rollCount}</strong></p>
         <p>Time: <strong>{time}</strong></p>
+
+        <hr />
+
+        <p>Best Time: {" "}
+          <strong>{bestTime !== null ? `${bestTime}s` : "-"}</strong>
+        </p>
+        <p>Best Rolls: {" "}
+          <strong>{bestRolls !== null ? bestRolls : "-"}</strong>
+        </p>
       </div>
       <div className='dice-container'>
         {diceElements}
