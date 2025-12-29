@@ -127,6 +127,9 @@ export default function App() {
           <strong>{bestRolls !== null ? bestRolls : "-"}</strong>
         </p>
       </div>
+      <button className='reset-scores' oncClick={resetBestScores}>
+        Reset Best Scores
+      </button>
       <div className='dice-container'>
         {diceElements}
       </div>
