@@ -43,6 +43,13 @@ main {
   text-align: center;
 }
 
+.dice-stats {
+  display: flex;
+  justify-content: space-between;
+  width: 60%;
+  margin-bottom: 10px;
+}
+
 .dice-container {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
