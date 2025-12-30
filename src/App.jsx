@@ -38,6 +38,7 @@ export default function App() {
 
       rollBtnRef.current.focus()
     } else {
+
       const intervalId = setInterval(() => {
         setTime(prevTime => prevTime + 1)
       }, 1000)
@@ -127,9 +128,6 @@ export default function App() {
           <strong>{bestRolls !== null ? bestRolls : "-"}</strong>
         </p>
       </div>
-      <button className='reset-scores' oncClick={resetBestScores}>
-        Reset Best Scores
-      </button>
       <div className='dice-container'>
         {diceElements}
       </div>
