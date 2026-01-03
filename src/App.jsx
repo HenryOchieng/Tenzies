@@ -92,7 +92,12 @@ export default function App() {
     setTime(0)
   }
 
-  
+  function resetBestScores() {
+    setBestTime(null)
+    setBestRolls(null)
+    localStorage.removeItem("bestTime")
+    localStorage.removeItem("bestRolls")
+  }
 
   // Function to roll the dice
   function rollDice() {
@@ -159,13 +164,16 @@ export default function App() {
       <div className='dice-container'>
         {diceElements}
       </div>
-      <button 
-        ref={rollBtnRef} 
-        className="roll-dice" 
-        onClick={rollDice}
-      >
-        {gameWon ? "New Game" : "Roll"}
-      </button> 
+      <div className='button-row'>
+        <button 
+          ref={rollBtnRef} 
+          className="roll-dice" 
+          onClick={rollDice}
+        >
+          {gameWon ? "New Game" : "Roll"}
+        </button> 
+        <button className='reset-scores' onClick={resetBestScores}>Reset Scores</button>
+      </div>
     </main>
   )
 }
