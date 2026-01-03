@@ -16,36 +16,62 @@ export default function App() {
     () => JSON.parse(localStorage.getItem("bestRolls")) ?? null
   )
   
-  // Check for win condition whenever the dice state changes
+  // Check for win condition whenever dice state changes
   useEffect(() => {
     const allHeld = dice.every(die => die.isHeld);
     const firstValue = dice[0].value;
     const allSameValue = dice.every(die => die.value === firstValue)
+    
     if (allHeld && allSameValue) { 
       setGameWon(true);
     }
 
-    if (gameWon) {
-      if (bestTime === null || time < bestTime) {
-        setBestTime(time)
-        localStorage.setItem("bestTime", JSON.stringify(time))
-      }
+  }, [dice])
 
-      if (bestRolls === null || rollCount < bestRolls) {
-        setBestRolls(rollCount)
-        localStorage.setItem("bestRolls", JSON.stringify(rollCount))
-      }
-
-      rollBtnRef.current.focus()
-    } else {
-
-      const intervalId = setInterval(() => {
-        setTime(prevTime => prevTime + 1)
-      }, 1000)
-
-      return () => clearInterval(intervalId)
+  // Update best time and rolls when game is won
+  useEffect(() => {
+    if (!gameWon) return 
+    
+    if (bestTime === null || time < bestTime) {
+      setBestTime(time)
+      localStorage.setItem("bestTime", JSON.stringify(time))
     }
-  }, [dice, gameWon])
+
+    if (bestRolls === null || rollCount < bestRolls) {
+      setBestRolls(rollCount)
+      localStorage.setItem("bestRolls", JSON.stringify(rollCount))
+    }
+
+    rollBtnRef.current?.focus()
+  }, [gameWon])
+
+  // Timer effect
+  useEffect(() => {
+    if (gameWon) return 
+
+    let intervalId
+
+    function handleVisibilityChange() {
+      if (document.hidden) {
+        clearInterval(intervalId)
+      } else {
+        intervalId = setInterval(() => {
+          setTime(prev => prev + 1)
+        }, 1000)
+      }
+    }
+
+    intervalId = setInterval(() => {
+      setTime(prev => prev + 1)
+    }, 1000)
+
+    document.addEventListener("visibilitychange", handleVisibilityChange)
+
+    return () => {
+      clearInterval(intervalId)
+      document.removeEventListener("visibilitychange", handleVisibilityChange)
+    }
+  })
 
   // Function to generate an array of 10 new dice objects
   function generateAllNewDice() {
@@ -65,6 +91,8 @@ export default function App() {
     setRollCount(0)
     setTime(0)
   }
+
+  
 
   // Function to roll the dice
   function rollDice() {
