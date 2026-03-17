@@ -92,7 +92,9 @@ export default function App() {
     setTime(0)
   }
 
+  // Function to reset best scores
   function resetBestScores() {
+    setGameWon(false)
     setBestTime(null)
     setBestRolls(null)
     localStorage.removeItem("bestTime")
@@ -120,7 +122,7 @@ export default function App() {
   function hold(id) {
     setDice((oldDice) =>
       oldDice.map((die) => 
-        die.id === id ? { ...die, isHeld: !die.isHeld } : die //Ternary operator to toggle isHeld property of the die with matching id
+        die.id === id ? { ...die, isHeld: !die.isHeld } : die
       )
     )
   }
