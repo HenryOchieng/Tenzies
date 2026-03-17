@@ -94,7 +94,7 @@ export default function App() {
 
   // Function to reset best scores
   function resetBestScores() {
-    setGameWon(false)
+    resetGame()
     setBestTime(null)
     setBestRolls(null)
     localStorage.removeItem("bestTime")
